@@ -2,8 +2,6 @@
 
 #include <limits.h>
 
-const char charset[] = "abcdefghijklmnopqrstuvwxyz";
-const size_t charsetSize = sizeof(charset) / sizeof(charset[0]);
-
 //random helper functions
-void randomString(char *str, size_t maxSize); //please make sure that str has enough space
+void randomInit(uint64_t seed);
+void randomString(char *str, size_t maxSize); //please make sure that str has maxSize+1 spaces

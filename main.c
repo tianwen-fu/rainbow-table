@@ -3,13 +3,15 @@
 #include <string.h>
 #include <openssl/sha.h>
 #include <time.h>
-#include "tinymt/tinymt64.h"
+#include "random.h"
 
 int main(){
-    tinymt64_t randomGenerator;
-    tinymt64_init(&randomGenerator, time(NULL));
-    for(int i=0;i<100;i++)
-        printf("%20"PRIu64"\n",tinymt64_generate_uint64(&randomGenerator));
+    char str[10];
+    randomInit(time(NULL));
+    for(int i=0;i<100;i++){
+        randomString(str,9);
+        printf("%s\n",str);
+    }
 
     return 0;
 }
