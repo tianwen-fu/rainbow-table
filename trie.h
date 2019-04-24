@@ -7,10 +7,15 @@
 #define CHARSET_SIZE 26
 
 //trie indexed by the end of the list
-typedef struct trieNode{
+typedef struct trieNode {
     struct trieNode *children[CHARSET_SIZE];
     char *listStart; //null if it is an intermediate node
-}TrieNode;
+} TrieNode;
 
-void trieAdd(char *listStart, char *listEnd);
-char* trieFind(char *listEnd); //null if not found
+/*all chars are allowed to be freed after calling the function*/
+
+void trieAdd(TrieNode *root, char *listStart, char *listEnd);
+
+char *trieFind(TrieNode *root, char *listEnd); //null if not found
+
+void trieDestroy(TrieNode *root);
