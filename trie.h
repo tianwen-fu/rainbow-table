@@ -12,10 +12,20 @@ typedef struct trieNode {
     char *listStart; //null if it is an intermediate node
 } TrieNode;
 
-/*all chars are allowed to be freed after calling the function*/
+//metadata for a trie
+typedef struct {
+    const size_t charsetSize;
 
-void trieAdd(TrieNode *root, char *listStart, char *listEnd);
+    size_t (*encode)(char); //encode a char in charset to [0,charsetSize)
+    TrieNode *root;
+} Trie;
 
-char *trieFind(TrieNode *root, char *listEnd); //null if not found
+/*all chars are allowed to be freed after calling the functions*/
 
-void trieDestroy(TrieNode *root);
+Trie *trieNew(size_t charsetSize, size_t (*encode)(char));
+
+void trieAdd(Trie *trie, char *listStart, char *listEnd);
+
+char *trieFind(Trie *trie, char *listEnd); //null if not found
+
+void trieDestroy(Trie *trie);
