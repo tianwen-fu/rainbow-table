@@ -1,0 +1,37 @@
+% !TeX program = pdflatex
+% !TeX encoding = utf8
+% !TeX spellcheck = en_US
+
+\documentclass{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{multicol}
+\usepackage{indentfirst}
+\usepackage{url}
+
+\title{Report on Rainbow Tables}
+\author{Fu Tianwen}
+
+\begin{document}
+\maketitle
+\begin{multicols}{2}
+\section{Introduction}
+\subsection{Background}
+It is quite common nowadays to provide passwords to websites. When the database of website become compromised, attackers may achieve user's password and use it to crack the user's account at other websites (if the user has a bad habit of using the same password everywhere).
+
+Therefore, most websites use cryptographic hash functions to validate passwords. For every input, such function gives a deterministic fixed-size hash and it is mostly infeasible to retrieve the original value from the message digest\cite{wiki:cryptoHash}. This approach can validate whether the user provided the correct password without the vulnerability to leak the user's original password.
+
+However, such security belief depends on the invertibility of cryptographic hash functions. Once it becomes easy to create a collision of the hash digest, attackers can pretend to be the legitimate user. Rainbow tables provide a way to crack the hash functions.
+
+\subsection{Previous Works}
+Before data structures similar to rainbow tables were invented, there had been two brute-force ways to crack the password. One is to try all possibilities until one gets the same hash. This method is overwhelmingly time-consuming and requires re-computation each time cracking another password. The other is to pre-compute all the hashes for a rather large set of input, then create a dictionary-like data structure (such as hashtables or trie trees) to look up the plain text in $O(1)$ time. The dictionary can also be downloaded and shared to avoid the long pre-computation time. However, such dictionaries occupies a huge space and has difficulties to share, store and reuse.
+
+To solve such problems, time-memory tradeoff techniques were introduced and varieties of optimizations were published, whose ideas and implementations will be discussed in the following sections. With these techniques, my implementation could generate and solve a 6-letter alphabetic string with only 6MB text file\footnote{File size could be further reduced by using a binary file.} of table in less than 10 minutes as measured on my Intel i5-6300HQ computer. It is believed with further code-level optimization\footnote{My implementation involves a great number of function pointers and structures to provide clear framework and generality; if one can restrict the specific usage the performance can be greatly improved.} and GPU usage there is still much improvement space for efficiency, which will also be discussed in following sections.
+
+\section{Block-based Time-memory Tradeoff}
+
+
+\bibliographystyle{ieeetr}
+\bibliography{bib}
+\end{multicols}
+\end{document}
