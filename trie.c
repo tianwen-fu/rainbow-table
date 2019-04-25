@@ -29,13 +29,14 @@ void trieAdd(Trie *trie, char *listStart, char *listEnd) {
     strcpy(root->listStart, listStart); //duplicate the string
 }
 
-char *trieFind(Trie *trie, char *listEnd) {
+char *trieFind(const Trie *trie, char *listEnd) {
     TrieNode *root = trie->root;
     for (; *listEnd; listEnd++) { //iterate all characters
         if (root == NULL) return NULL;
         root = root->children[trie->encode(*listEnd)];
     }
-    return root->listStart;
+    if (root != NULL) return root->listStart;
+    else return NULL;
 }
 
 void trieDestroyNode(TrieNode *root) {

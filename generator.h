@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include "config.h"
 
-void generateRainbowTable(Configuration *config, size_t listCount, size_t reductionCount);
+void generateRainbowTable(Configuration *config, size_t listCount);
 
 void exportToTrie(Trie *trie);
 

@@ -26,6 +26,6 @@ Trie *trieNew(size_t charsetSize, size_t (*encode)(char));
 
 void trieAdd(Trie *trie, char *listStart, char *listEnd);
 
-char *trieFind(Trie *trie, char *listEnd); //null if not found
+char *trieFind(const Trie *trie, char *listEnd); //null if not found
 
 void trieDestroy(Trie *trie);

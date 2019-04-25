@@ -7,6 +7,7 @@ typedef struct {
     size_t charsetSize;
     size_t maxPlainLength;
     size_t digestLength;
+    size_t reductionCount;
 
     size_t (*encode)(char);
 

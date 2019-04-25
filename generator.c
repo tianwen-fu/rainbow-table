@@ -22,16 +22,18 @@ void *generateRainbowTableKernel(void *id) {
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     int i = (int) id;
     unsigned char *digest = malloc(sizeof(char) * (digestSize + 1));
+    //printf("%d: %s\n",i,listStart[i]);
     strcpy(listEnd[i], listStart[i]);
     for (int count = 0; count < redCount; count++) {
         hash(listEnd[i], digest);
         reduce(count, digest, listEnd[i]);
+        //printf("%d: %s\n",i,listEnd[i]);
     }
     pthread_exit(NULL);
     return NULL;
 }
 
-void generateRainbowTable(Configuration *config, size_t listCount, size_t reductionCount) {
+void generateRainbowTable(Configuration *config, size_t listCount) {
     assert(!globalVariablesLock);
     //lock global variables
     globalVariablesLock = true;
@@ -42,8 +44,8 @@ void generateRainbowTable(Configuration *config, size_t listCount, size_t reduct
     listStart = malloc(sizeof(char *) * listCount);
     listEnd = malloc(sizeof(char *) * listCount);
     for (int i = 0; i < listCount; i++) {
-        listStart[i] = malloc(sizeof(char) * config->maxPlainLength);
-        listEnd[i] = malloc(sizeof(char) * config->maxPlainLength);
+        listStart[i] = malloc(sizeof(char) * (config->maxPlainLength + 1));
+        listEnd[i] = malloc(sizeof(char) * (config->maxPlainLength + 1));
     }
 
     //generate random strings
@@ -52,7 +54,7 @@ void generateRainbowTable(Configuration *config, size_t listCount, size_t reduct
     }
 
     //spawn threads (or kernels if use CUDA)
-    redCount = reductionCount;
+    redCount = config->reductionCount;
     hash = config->hash;
     reduce = config->reduce;
     pthread_t *threadID = malloc(sizeof(pthread_t) * listCount);
@@ -80,6 +82,7 @@ void exportToFile(FILE *output, char separator, char lineEnd) {
 }
 
 void destroyRawData() {
+    assert(globalVariablesLock);
     for (int i = 0; i < lstCount; i++) {
         free(listStart[i]);
         free(listEnd[i]);
