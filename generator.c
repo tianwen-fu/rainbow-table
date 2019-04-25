@@ -19,6 +19,7 @@ void (*hash)(const char *plain, unsigned char *digest);
 void (*reduce)(int k, const unsigned char *cipher, char *reduced);
 
 void *generateRainbowTableKernel(void *id) {
+#pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
     int i = (int) id;
     unsigned char *digest = malloc(sizeof(char) * (digestSize + 1));
     strcpy(listEnd[i], listStart[i]);
@@ -56,6 +57,7 @@ void generateRainbowTable(Configuration *config, size_t listCount, size_t reduct
     reduce = config->reduce;
     pthread_t *threadID = malloc(sizeof(pthread_t) * listCount);
     for (unsigned i = 0; i < listCount; i++) {
+#pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
         pthread_create(threadID + i, NULL, generateRainbowTableKernel, (void *) i); //this is not good :-)
     }
     for (int i = 0; i < listCount; i++) pthread_join(threadID[i], NULL); //sync

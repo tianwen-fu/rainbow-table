@@ -17,7 +17,8 @@ void randomInit(uint64_t seed) {
 //currently only handle string less than 13 characters
 void randomString(char *str, size_t maxSize, const char *charset, size_t charsetSize) {
     assert(initialized);
-    uint64_t result = tinymt64_generate_uint64(&random);
+    const double stringMax = pow(charsetSize, maxSize);
+    uint64_t result = (uint64_t) round(stringMax * tinymt64_generate_double01(&random));
     for (int i = 0; i < maxSize; i++) {
         if (!result) {
             str[i] = 0;

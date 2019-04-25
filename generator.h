@@ -10,7 +10,7 @@ typedef struct {
     size_t maxPlainLength;
     size_t digestLength;
 
-    void (*encode)(char);
+    size_t (*encode)(char);
 
     void (*hash)(const char *plain, unsigned char *digest);
 
