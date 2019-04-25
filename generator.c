@@ -75,9 +75,9 @@ void exportToFile(FILE *output, char separator, char lineEnd) {
     assert(globalVariablesLock);
     for (int i = 0; i < lstCount; i++) {
         fprintf(output, "%s", listStart[i]);
-        fputchar(separator);
+        fputc(separator, output);
         fprintf(output, "%s", listEnd[i]);
-        fputchar(lineEnd);
+        fputc(lineEnd, output);
     }
 }
 

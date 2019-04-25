@@ -18,7 +18,9 @@ const char *charset = "abcdefghijklmnopqrstuvwxyz";
 char str[1000][10];
 
 int main() {
-    randomInit(233);
+    randomInit(time(NULL));
+
+    FILE *rainbowLog = fopen("rainbow.log", "w");
 
     char *plain = "succes";
     unsigned char cipher[SHA_DIGEST_LENGTH];
@@ -30,8 +32,8 @@ int main() {
     putchar('\n');
 
     Trie *trie = trieNew(26, encode);
-    generateRainbowTable(&SHA1Sample, 40000);
-    //exportToFile(stdout, ',', '\n');
+    generateRainbowTable(&SHA1Sample, 400000);
+    exportToFile(rainbowLog, ',', '\n');
     exportToTrie(trie);
     destroyRawData();
 
@@ -39,6 +41,8 @@ int main() {
     if (solve(trie, &SHA1Sample, cipher, solved)) {
         printf("Successfully Solved: %s\n", solved);
     } else printf("Solve Not Successful\n");
+
+    fclose(rainbowLog);
 
     return 0;
 }
