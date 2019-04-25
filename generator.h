@@ -1,6 +1,8 @@
 #pragma once
 
 #include <limits.h>
+#include "trie.h"
+#include <stdio.h>
 
 typedef struct {
     char *charset;
@@ -17,8 +19,8 @@ typedef struct {
 
 void generateRainbowTable(Configuration *config, size_t listCount, size_t reductionCount);
 
-void exportToTrie();
+void exportToTrie(Trie *trie);
 
-void exportToFile(char separator, char lineEnd);
+void exportToFile(FILE *output, char separator, char lineEnd);
 
 void destroyRawData();
