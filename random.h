@@ -3,5 +3,8 @@
 #include <limits.h>
 
 //random helper functions
+
 void randomInit(uint64_t seed);
-void randomString(char *str, size_t maxSize); //please make sure that str has maxSize+1 spaces
+
+//please make sure that str has maxSize+1 spaces
+void randomString(char *str, size_t maxSize, const char *charset, size_t charsetSize);
