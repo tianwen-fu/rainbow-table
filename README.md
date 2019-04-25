@@ -17,6 +17,14 @@ Also the code is not guaranteed to be correct or follow the best practices.
 `tinymt/*`: tinyMT random number generator (since rand() has limited randomness and uncertain RAND_MAX)
 
 `related/*`: related research papers
+
+`config.h`: configuration struct for the rainbow table generator/solver
+
+`configsamples.c, configsamples.h`: sample configurations for testing purposes
+
+`generator.c, generator.h`: rainbow table generator
+
+`solver.c, solver.h`: plain text solver
    
 ## Future Plan
 If I survive the finals and have extra time, maybe I will try to implement this with CUDA.
