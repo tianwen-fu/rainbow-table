@@ -12,6 +12,7 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage[cache=false]{minted}
+\usepackage{amsmath}
 
 \title{Report on Rainbow Tables}
 \author{Fu Tianwen}
@@ -184,6 +185,42 @@ for (int i=0;i<SAMPLE_PLAIN_SIZE;i++){
 	rank /= 26;
 }
 reduced[SAMPLE_PLAIN_SIZE] = 0;
+\end{minted}
+
+\subsection{Storage of Generated Table}
+In this implementation, we use the Trie data structure to store the $(\text{listStart}, \text{listEnd})$ pair with guaranteed constant-time time-complexity for fixed-length input. One may also use hashtables or other similar data structures for the same purpose. Implementations of this part has little relation to the rainbow tables and are therefore omitted. See the online full code for details.
+
+\subsection{Cracking a Hash}
+Just as is shown above, we try each position that the hash might be at, look up the ending string in the table, and try to retrieve the string that hashes to the hash:
+\begin{minted}[tabsize=2, obeytabs=true]{c}
+for(int trial=reduction-1;trial>=0;trial--){
+	reduce(trial, cipher, reducedCipher);
+	reduceAndHash(config, reducedCipher, 
+		listEnd, trial + 1, reduction);
+	if ((listStart=trieFind(table,listEnd))){
+		reduceAndHash(config, listStart,
+			plain, 0, trial);
+		hash(plain, cipherTest);
+		bool success = true;
+		for (int i = 0; i < digestLength; i++) {
+			if (cipherTest[i] != cipher[i]) {
+				success = false;
+				break;
+			}
+		}
+		if (success) return true;
+	}
+}
+\end{minted}
+where the function \textit{reduceAndHash} performs multiple times of reduction and hashing and the function \textit{trieFind} returns NULL if not found.
+
+\section{Possible Improvements}
+\subsection{Separated Generation and Cracking}
+In our implementation we generate the whole table and use it to crack one hash; however this could be even slower than using the direct brute force. The advantage of pre-computation is that it can be reused. In fact, we can first generate a huge rainbow table, save it to a file (possibly a database like SQLite), and then each time we want to crack a password we just use the file.
+\subsection{GPU acceleration}
+The rainbow table generation process is very friendly to parallel programming. In this implementation, we use multi-threading, which can make the best use of our CPU cores and threads. However, spawning thousands of threads does not make a great optimization on CPU which has merely 4 or 6 cores. NVIDIA CUDA library can allow such simple parallel computations on GPU, just by changing the kernel to global code and write simply
+\begin{minted}[tabsize=2, obeytabs=true]{c}
+generateRainbowTableKernel<<<listCount,1>>>();
 \end{minted}
 \bibliographystyle{ieeetr}
 \bibliography{bib}
