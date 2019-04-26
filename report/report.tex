@@ -10,6 +10,8 @@
 \usepackage{url}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{listings}
+\usepackage[cache=false]{minted}
 
 \title{Report on Rainbow Tables}
 \author{Fu Tianwen}
@@ -102,8 +104,87 @@ Therefore, to minimize the probability of merging, the series of reduction funct
 \subsubsection{Startings of the List}
 The starting of each list mostly comes from independently random strings. The random function needs to generate uniformly equally likely strings in domain $D$ so that we can cover most texts and avoid merging.
 \section{Implementation}
-Although the algorithm is easy, a great amount of details are involved in the implementation. In the following we will only show some code snippets of the core parts, while the whole detailed code can be achieved at \url{https://github.com/kevin-futianwen/rainbow-table}. 
+To keep our focus on the algorithm, we assume the input are all hashes from 6-letter alphabetic strings. Although the algorithm is easy, a large amount of supplementary codes are involved. In the following we will only show some code snippets of the core parts, while the whole detailed code can be achieved at \url{https://github.com/kevin-futianwen/rainbow-table}. 
 
+\subsection{Random Strings}
+As is discussed above, starting strings needs to be uniformly random among all possible inputs of interest. However, the c standard \textit{rand()} function has limited randomness and the constant \textit{RAND\_MAX} is only guaranteed to be at least 32767, which is far from enough.
+
+Therefore, we adopted the Tiny Mersenne Twister\cite{tinymt} which can generate random uniform 64-bit integer or double precision floating point number on 64-bit CPU. The random sequence has a period of $2^{127-1}$ while the performance is fast enough for our use.
+
+With the random number generator above, we generate random strings by the following method: 
+
+\begin{minted}[tabsize=2, obeytabs=true]{c}
+const double stringMax = 
+						pow(charsetSize, maxSize);
+uint64_t result = (uint64_t) round(stringMax *
+		 tinymt64_generate_double01(&random));
+for (int i = 0; i < maxSize; i++) {
+	if (!result) {
+		str[i] = 0;
+		break;
+	}
+	str[i] = charset[result % charsetSize];
+	result /= charsetSize;
+}
+str[maxSize] = 0;
+\end{minted}
+\subsection{Generating the Rainbow Table}
+The algorithm suits parallelism well; to maintain simplicity, we use CPU-level parallelism (but it can be transformed to GPU parallel program easily), the core code is given by\footnote{Some details are removed to keep the report short and concentrated; see the github site for the full code in \textit{generator.c}}:
+
+\begin{minted}[tabsize=2, obeytabs=true]{c}
+for (int i = 0; i < listCount; i++) {
+	randomString(listStart[i],
+		config->maxPlainLength, 
+		config->charset, 
+		config->charsetSize);
+}
+for (unsigned i = 0; i < listCount; i++) {
+	pthread_create(threadID + i, NULL, 
+			generateRainbowTableKernel, 
+			(void *) i); 
+}
+for (int i = 0; i < listCount; i++)
+	pthread_join(threadID[i], NULL); 
+\end{minted}
+
+The kernel in each thread is given by:
+
+\begin{minted}[tabsize=2, obeytabs=true]{c}
+int i = (int) id;
+strcpy(listEnd[i], listStart[i]);
+for (int c = 0; c < reduction; c++) {
+	hash(listEnd[i], digest);
+	reduce(count, digest, listEnd[i]);
+}
+pthread_exit(NULL);
+\end{minted}
+
+\subsection{The Reduction Function}
+As is discussed above, reduction functions needs to be different from each other and cover as many plain texts of interest as possible. In this implementation, we create a new string by concatenating $k$, the number of reduction function, with first 7 bytes of hash, then get the SHA1 of this new string. From the SHA1 we reconstruct a plain text of interest.
+
+By avalanche effect\cite{wiki:avalanche}, the output of our reduction function will be different to a great extent for different $k$; properties of cryptographic functions can also give us pretty much coverage of all plain texts. The simplified core parts of the reduce function is given by\footnote{see \textit{configsamples.c} at github repository for details}:
+\begin{minted}[tabsize=2, obeytabs=true]{c}
+modifiedPlain[0] = k + 33;
+memcpy(modifiedPlain + 1, 
+				cipher, 7);
+SHA1(modifiedPlain, 8, digest);
+for (int i = 0; i < 8; i++) {
+	rank *= 256;
+	rank += digest[i];
+}
+rank = (uint64_t) round(
+	pow(26, SAMPLE_PLAIN_SIZE) 
+	* (rank / pow(256, 8)));
+for (int i=0;i<SAMPLE_PLAIN_SIZE;i++){
+	reduced[i] = rank % 26 + 'a';
+	if (!rank) {
+		reduced[i] = 0;
+		break;
+	}
+	rank /= 26;
+}
+reduced[SAMPLE_PLAIN_SIZE] = 0;
+\end{minted}
 \bibliographystyle{ieeetr}
 \bibliography{bib}
 \end{multicols}

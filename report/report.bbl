@@ -15,4 +15,17 @@ M.~Hellman, ``A cryptanalytic time-memory trade-off,'' {\em IEEE transactions
 P.~Oechslin, ``Making a faster cryptanalytic time-memory trade-off,'' in {\em
   Annual International Cryptology Conference}, pp.~617--630, Springer, 2003.
 
+\bibitem{tinymt}
+S.~Mutsuo and M.~Makoto, ``Tiny mersenne twister (tinymt): A small-sized
+  variant of mersenne twister.''
+  \url{http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/TINYMT/}, 2015.
+\newblock [Online; accessed 26-April-2019].
+
+\bibitem{wiki:avalanche}
+{Wikipedia contributors}, ``Avalanche effect --- {Wikipedia}{,} the free
+  encyclopedia.''
+  \url{https://en.wikipedia.org/w/index.php?title=Avalanche_effect&oldid=892826167},
+  2019.
+\newblock [Online; accessed 26-April-2019].
+
 \end{thebibliography}
