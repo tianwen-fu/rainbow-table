@@ -11,4 +11,8 @@
 M.~Hellman, ``A cryptanalytic time-memory trade-off,'' {\em IEEE transactions
   on Information Theory}, vol.~26, no.~4, pp.~401--406, 1980.
 
+\bibitem{oechslin2003making}
+P.~Oechslin, ``Making a faster cryptanalytic time-memory trade-off,'' in {\em
+  Annual International Cryptology Conference}, pp.~617--630, Springer, 2003.
+
 \end{thebibliography}

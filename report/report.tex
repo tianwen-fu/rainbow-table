@@ -58,7 +58,7 @@ Once we have these functions, we can then pick some random strings and use them 
 	\label{fig:hashReduce}
 \end{figure}
 
-Notice that with the start of each chain we can rebuild the whole chain; also to check whether a hash is in a chain, we can simply apply the reduce function, and then hash and reduce until we find the result same as the end of some chain. Therefore, we only need to store the start and end of each chain, so the space complexity is only $O(n)$. Although the time complexity of generating a table is $O(nm)$, the algorithm suits parallelism well and therefore the process can be done in $O(m)$. Also one may simple download the table from the Internet, which is only $O(n)$ in space, and the time complexity of cracking is $O(m)$.
+Notice that with the start of each chain we can rebuild the whole chain; also to check whether a hash is in a chain, we can simply apply the reduction function, and then hash and reduce until we find the result same as the end of some chain. Therefore, we only need to store the start and end of each chain, so the space complexity is only $O(n)$. Although the time complexity of generating a table is $O(nm)$, the algorithm suits parallelism well and therefore the process can be done in $O(m)$. Also one may simple download the table from the Internet, which is only $O(n)$ in space, and the time complexity of cracking is $O(m)$.
 
 The implementation of this original method will not be given here since the optimized and more powerful implementation will be given in the following sections.
 
@@ -76,7 +76,7 @@ It may be implied that in the best case the chains can provide the plain text of
 The two chains are identical starting from the first occurrence of the same text. This may happen at any place, making it almost infeasible to prevent it; when $n$ and $m$ become larger in proportion to the total possible plain text $N$, merging also become more frequent and waste a lot of computational resources.
 
 \subsubsection{False Alarms}
-Another problem that may occur during the process of cracking is the raise of false alarms. When the hashed and reduced result of some hash matches the end of some chain, other than having a success, it may also be possible that we have a collision in reduce functions, as shown in Figure \ref{fig:hashfalsealarm}:
+Another problem that may occur during the process of cracking is the raise of false alarms. When the hashed and reduced result of some hash matches the end of some chain, other than having a success, it may also be possible that we have a collision in reduction functions, as shown in Figure \ref{fig:hashfalsealarm}:
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=\linewidth]{img/hashFalseAlarm}
@@ -84,6 +84,25 @@ Another problem that may occur during the process of cracking is the raise of fa
 	\label{fig:hashfalsealarm}
 \end{figure}
 
+\section{The Rainbow Table}
+\subsection{The Algorithm}
+To cope with the decay of success rate when $n,m$ become large and to reduce false alarms, Oechslin\cite{oechslin2003making} proposed a powerful and easy optimization for the method discussed above. Instead of using only one reduction function, it takes a series of reduction functions $$R_k: G \to D, k=0,1,\cdots,m$$ as shown in Figure \ref{fig:rainbowtable}:
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=\linewidth]{img/rainbowTable}
+	\caption{Illustration of Rainbow Table}
+	\label{fig:rainbowtable}
+\end{figure}
+\subsection{Analysis}
+\subsubsection{Reduction Functions}
+In Figure \ref{fig:rainbowtable}, note that there are two occurrences of \textit{more} but they do not end up in identical chains because they were applied to different reduction functions.
+
+Therefore, to minimize the probability of merging, the series of reduction functions need to give completely different outputs for the same input; the reduction functions also need to cover most of the possible plain text with almost uniform probability so that the rainbow table can contain as many plain texts as possible.
+
+\subsubsection{Startings of the List}
+The starting of each list mostly comes from independently random strings. The random function needs to generate uniformly equally likely strings in domain $D$ so that we can cover most texts and avoid merging.
+\section{Implementation}
+Although the algorithm is easy, a great amount of details are involved in the implementation. In the following we will only show some code snippets of the core parts, while the whole detailed code can be achieved at \url{https://github.com/kevin-futianwen/rainbow-table}. 
 
 \bibliographystyle{ieeetr}
 \bibliography{bib}
