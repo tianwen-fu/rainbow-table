@@ -7,4 +7,8 @@
   2019.
 \newblock [Online; accessed 25-April-2019].
 
+\bibitem{hellman1980cryptanalytic}
+M.~Hellman, ``A cryptanalytic time-memory trade-off,'' {\em IEEE transactions
+  on Information Theory}, vol.~26, no.~4, pp.~401--406, 1980.
+
 \end{thebibliography}
